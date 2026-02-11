@@ -12,6 +12,7 @@ import os
 import sys
 import socket
 from dotenv import load_dotenv
+import ssl
 
 # Force add venv site-packages to path
 venv_site_packages = Path(__file__).parent.parent / ".venv" / "Lib" / "site-packages"
@@ -89,10 +90,9 @@ def get_spotify_redirect_uri():
     # Auto-detect LAN IP for Pi deployment (only if not localhost)
     lan_ip = get_lan_ip()
     if lan_ip and lan_ip != "127.0.0.1":
-        # For Pi: would need HTTPS setup. For now, return the LAN IP URI
-        # On Pi, you'll need to set SPOTIFY_BACKEND_BASE_URL to https://192.168.x.x:8000
-        # or register the HTTP URI directly with Spotify
-        return f"http://{lan_ip}:8000/callback"
+        # For Pi with HTTPS: use the LAN IP with HTTPS protocol
+        # This assumes HTTPS is set up on Pi (with self-signed cert)
+        return f"https://{lan_ip}:8000/callback"
     
     # Fall back to configured URL (for local dev: https://localhost:8000)
     return f"{SPOTIFY_BACKEND_BASE_URL}/callback"
