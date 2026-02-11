@@ -1,0 +1,75 @@
+/* Fade/slide quand le contenu change (via key React) */
+.fade-swap {
+  animation: fadeSwap 180ms ease;
+}
+@keyframes fadeSwap {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Crossfade cover */
+.cover-swap {
+  animation: coverSwap 220ms ease;
+}
+@keyframes coverSwap {
+  from {
+    opacity: 0;
+    transform: scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Heart pulse on like */
+.heart-pulse {
+  animation: heartPulse 220ms ease;
+}
+@keyframes heartPulse {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Micro "tick" de rotation */
+.tick-rotate {
+  animation: tickRotate 140ms ease;
+  transform-origin: 50% 50%;
+}
+
+@keyframes tickRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: brightness(1);
+  }
+  45% {
+    transform: rotate(-4deg) scale(1.02);
+    filter: brightness(1.06);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Variante plus douce (si tu veux) */
+/*
+.tick-soft { animation: tickSoft 160ms ease; }
+@keyframes tickSoft {
+  from { transform: translateY(1px); opacity: 0.92; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+*/

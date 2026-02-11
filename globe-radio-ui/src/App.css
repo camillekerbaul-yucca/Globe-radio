@@ -1,0 +1,192 @@
+/* =========================
+   Global reset & base
+   ========================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/* =========================
+   Buttons & touch behavior
+   ========================= */
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Remove focus outlines everywhere */
+button:focus,
+button:focus-visible,
+button:active {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Touch-specific helper class (used in NowPlayingScreen) */
+.touch-btn {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.touch-btn:focus,
+.touch-btn:focus-visible,
+.touch-btn:active {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Optional: subtle press feedback (no circles) */
+.touch-btn:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+/* =========================
+   Images
+   ========================= */
+
+img {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* =========================
+   Animations
+   ========================= */
+
+@keyframes titleMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes titleMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Heart / like pulse */
+@keyframes heartPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heart-pulse {
+  animation: heartPulse 0.25s ease-out;
+}
+
+/* Optional cover swap fade (if you want later) */
+@keyframes coverFade {
+  from {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cover-swap {
+  animation: coverFade 0.25s ease-out;
+}
+
+/* =========================
+   Scroll / selection
+   ========================= */
+
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* =========================
+   Debug helpers (optional)
+   ========================= */
+
+/*
+.debug-outline * {
+  outline: 1px solid rgba(255,0,0,0.2);
+}
+*/
+
+/* =========================
+   HARD disable focus / tap visuals
+   ========================= */
+
+/* Buttons */
+button,
+button:focus,
+button:focus-visible,
+button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Firefox inner focus border */
+button::-moz-focus-inner {
+  border: 0 !important;
+}
+
+/* Images inside buttons (YES this matters) */
+button img,
+button img:focus,
+button img:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Touch helper class (extra safety) */
+.touch-btn,
+.touch-btn:focus,
+.touch-btn:focus-visible,
+.touch-btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}

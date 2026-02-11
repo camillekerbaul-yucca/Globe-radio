@@ -1,0 +1,10 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        ".\\.venv\\Scripts\\Activate.ps1": true,
+        "/^python -m uvicorn server\\.server:app --reload --host 127\\.0\\.0\\.1 --port 8000$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        ".\\.venv\\Scripts\\python.exe": true
+    }
+}

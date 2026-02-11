@@ -1,0 +1,23 @@
+/* Empêche les zooms/gestures bizarres sur mobile/tactile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Boutons tactiles : feedback "pressed" */
+.touch-btn {
+  transform: translateZ(0);
+  transition: transform 80ms ease, filter 80ms ease, background 120ms ease,
+    border-color 120ms ease;
+}
+
+.touch-btn:active {
+  transform: scale(0.98);
+  filter: brightness(0.92);
+}
+
+.touch-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 2px;
+}
+
+* { box-sizing: border-box; }

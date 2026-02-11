@@ -1,0 +1,6 @@
+cd .\globe-radio-ui\
+npm run dev
+
+cd server
+.venv\Scripts\activate
+uvicorn server:app --reload
