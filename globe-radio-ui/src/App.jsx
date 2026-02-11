@@ -3,10 +3,13 @@ import DevPanel from "./DevPanel";
 
 export default function App() {
   const isDev = new URLSearchParams(window.location.search).has("dev");
+  const useFrame = isDev || new URLSearchParams(window.location.search).has("frame");
+  const pageStyle = useFrame ? styles.pageFrame : styles.pageFull;
+  const frameStyle = useFrame ? styles.frameFixed : styles.frameFull;
 
   return (
-    <div style={styles.page}>
-      <div style={styles.frame}>
+    <div style={pageStyle}>
+      <div style={frameStyle}>
         <NowPlayingScreen />
       </div>
 
@@ -16,16 +19,35 @@ export default function App() {
 }
 
 const styles = {
-  page: {
+  pageFull: {
     minHeight: "100vh",
+    width: "100vw",
+    display: "flex",
+    alignItems: "stretch",
+    justifyContent: "stretch",
+    background: "#000",
+  },
+  frameFull: {
+    width: "100vw",
+    height: "100vh",
+    background: "#000",
+    borderRadius: 0,
+    overflow: "hidden",
+    boxShadow: "none",
+    border: "none",
+    position: "relative", // <-- important pour l'overlay settings
+  },
+  pageFrame: {
+    minHeight: "100vh",
+    width: "100vw",
     display: "grid",
     placeItems: "center",
     background: "#0f0f12",
   },
-  frame: {
-    width: 480,
-    height: 320,
-    background: "#0b0b0c",
+  frameFixed: {
+    width: 1024,
+    height: 600,
+    background: "#000",
     borderRadius: 18,
     overflow: "hidden",
     boxShadow: "0 20px 70px rgba(0,0,0,0.6)",
