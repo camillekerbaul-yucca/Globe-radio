@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, HTMLResponse
 from pydantic import BaseModel
 import json
 import random
@@ -73,6 +73,10 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "711d2c87130243d6b5acc63a6f99
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
 SPOTIFY_BACKEND_BASE_URL = os.getenv("SPOTIFY_BACKEND_BASE_URL", "https://localhost:8000")
 SPOTIFY_FRONTEND_BASE_URL = os.getenv("SPOTIFY_FRONTEND_BASE_URL", "http://localhost:5173")
+SPOTIFY_AUTH_SUCCESS_URL = os.getenv(
+    "SPOTIFY_AUTH_SUCCESS_URL",
+    f"{SPOTIFY_FRONTEND_BASE_URL}?spotify_auth=success",
+)
 
 # Determine the redirect URI 
 def get_spotify_redirect_uri():
@@ -440,6 +444,32 @@ def spotify_logout():
 
     return RedirectResponse(url=f"{SPOTIFY_FRONTEND_BASE_URL}?spotify_auth=logout")
 
+@app.get("/auth/success")
+def spotify_auth_success():
+        html = """
+        <!doctype html>
+        <html lang="en">
+            <head>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>Spotify Connected</title>
+                <style>
+                    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: #0b0b0c; color: #fff; margin: 0; display: grid; place-items: center; height: 100vh; }
+                    .card { background: #16161a; border: 1px solid rgba(255,255,255,0.08); padding: 24px 28px; border-radius: 14px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); max-width: 420px; }
+                    h1 { margin: 0 0 8px 0; font-size: 22px; }
+                    p { margin: 0; opacity: 0.8; font-size: 14px; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h1>Spotify connected</h1>
+                    <p>You can return to the kiosk now.</p>
+                </div>
+            </body>
+        </html>
+        """
+        return HTMLResponse(html)
+
 @app.get("/callback")
 def spotify_callback(code: str = None, error: str = None):
     """Handle Spotify callback"""
@@ -460,7 +490,7 @@ def spotify_callback(code: str = None, error: str = None):
             print(f"✓ Spotify user authenticated: {token_info}")
             
             # Redirect to frontend with success
-            return RedirectResponse(url=f"{SPOTIFY_FRONTEND_BASE_URL}?spotify_auth=success")
+            return RedirectResponse(url=SPOTIFY_AUTH_SUCCESS_URL)
         except Exception as e:
             print(f"✗ Spotify auth error: {e}")
             return JSONResponse({"error": str(e)}, status_code=400)
