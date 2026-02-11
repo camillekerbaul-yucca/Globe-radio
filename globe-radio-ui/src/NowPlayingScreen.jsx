@@ -1,3 +1,4 @@
+// Cache busting for UI resize - v2
 import { useEffect, useRef, useState } from "react";
 import { useNowPlaying, setNowPlaying } from "./state";
 import { postLike } from "./api";
