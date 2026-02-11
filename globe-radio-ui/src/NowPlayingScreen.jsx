@@ -307,8 +307,8 @@ export default function NowPlayingScreen() {
 
   const checkSpotifyStatus = async () => {
     try {
-      // Use detected host or fall back to localhost
-      const hostToCheck = spotifyHostOverride || "localhost";
+      // Use detected host, otherwise the current host
+      const hostToCheck = spotifyHostOverride || window.location.hostname || "localhost";
       const protocol = "https";  // Always HTTPS since backend runs on HTTPS
       const res = await fetch(`${protocol}://${hostToCheck}:8000/api/spotify/status`);
       if (!res.ok) {
@@ -333,7 +333,7 @@ export default function NowPlayingScreen() {
       }
       
       // On Pi or other network host - fetch the detected LAN IP
-      const apiBase = `http://${currentHost}:8000`;
+      const apiBase = `https://${currentHost}:8000`;
       const res = await fetch(`${apiBase}/api/hostinfo`);
       if (!res.ok) return;
       const data = await res.json();
@@ -351,7 +351,8 @@ export default function NowPlayingScreen() {
   const handleSpotifyClick = async () => {
     if (spotifyConnected) {
       try {
-        await fetch("http://localhost:8000/api/spotify/logout");
+        const logoutHost = spotifyHostOverride || window.location.hostname || "localhost";
+        await fetch(`https://${logoutHost}:8000/api/spotify/logout`);
       } finally {
         await checkSpotifyStatus();
       }
