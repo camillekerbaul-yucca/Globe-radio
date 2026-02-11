@@ -72,11 +72,23 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "711d2c87130243d6b5acc63a6f99
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
 SPOTIFY_BACKEND_BASE_URL = os.getenv("SPOTIFY_BACKEND_BASE_URL", "http://127.0.0.1:8000")
 SPOTIFY_FRONTEND_BASE_URL = os.getenv("SPOTIFY_FRONTEND_BASE_URL", "http://localhost:5173")
-SPOTIFY_REDIRECT_URI = f"{SPOTIFY_BACKEND_BASE_URL}/callback"
+
+# Determine the redirect URI - prefer LAN IP if available, fall back to configured URL
+def get_spotify_redirect_uri():
+    """Get Spotify redirect URI, preferring LAN IP for phones accessing from network"""
+    lan_ip = get_lan_ip()
+    if lan_ip and lan_ip != "127.0.0.1":
+        # Use LAN IP if detected (for Raspberry Pi or deployed scenarios)
+        return f"http://{lan_ip}:8000/callback"
+    # Fall back to configured URL (for local dev)
+    return f"{SPOTIFY_BACKEND_BASE_URL}/callback"
+
+SPOTIFY_REDIRECT_URI = get_spotify_redirect_uri()
 
 print(f"Spotify Client ID: {SPOTIFY_CLIENT_ID[:20]}...")
 print(f"Spotify Client Secret: {'SET' if SPOTIFY_CLIENT_SECRET else 'NOT SET'}")
 print(f"Spotify Redirect URI: {SPOTIFY_REDIRECT_URI}")
+print(f"Detected LAN IP: {get_lan_ip() or 'Not detected (using fallback)'}")
 
 # Spotify auth manager (only if available)
 spotify_oauth = None

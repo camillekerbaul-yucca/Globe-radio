@@ -301,7 +301,9 @@ export default function NowPlayingScreen() {
 
   const checkSpotifyStatus = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/spotify/status");
+      // Use detected host or fall back to localhost
+      const hostToCheck = spotifyHostOverride || "localhost";
+      const res = await fetch(`http://${hostToCheck}:8000/api/spotify/status`);
       if (!res.ok) {
         setSpotifyConnected(false);
         return;
@@ -315,15 +317,23 @@ export default function NowPlayingScreen() {
 
   const fetchHostInfo = async () => {
     try {
-      const apiBase = `http://${window.location.hostname || "localhost"}:8000`;
+      // Try to fetch from current location first
+      const currentHost = window.location.hostname || "localhost";
+      const apiBase = `http://${currentHost}:8000`;
+      
       const res = await fetch(`${apiBase}/api/hostinfo`);
       if (!res.ok) return;
       const data = await res.json();
+      
+      // Always use the LAN IP returned by the server
       if (data.lan_ip) {
+        // Add debug log (can be removed later)
+        console.log(`✓ Fetched LAN IP from server: ${data.lan_ip}`);
         setSpotifyHostOverride(data.lan_ip);
       }
-    } catch {
-      // Ignore host info failures
+    } catch (err) {
+      console.log(`ℹ Host info fetch failed:`, err);
+      // Ignore host info failures - will fall back to window.location.hostname
     }
   };
 
