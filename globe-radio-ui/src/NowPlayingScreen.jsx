@@ -294,11 +294,10 @@ export default function NowPlayingScreen() {
   const remainingTime = duration ? duration - currentTime : 0;
   
   // Determine the proper host and protocol for Spotify
-  // - localhost (dev): use localhost with HTTPS (registered with Spotify)
-  // - other hosts (Pi): use detected LAN IP with HTTP
+  // - Always use HTTPS since backend runs on HTTPS (with self-signed certs on Pi)
   const isLocalhost = !spotifyHostOverride && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
   const spotifyHost = spotifyHostOverride || window.location.hostname || "localhost";
-  const spotifyProtocol = isLocalhost ? "https" : "http";  // localhost is HTTPS, others are HTTP
+  const spotifyProtocol = "https";  // Always HTTPS since backend runs on HTTPS
   const spotifyLoginUrl = `${spotifyProtocol}://${spotifyHost}:8000/api/spotify/login`;
   const spotifyQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
     spotifyLoginUrl
@@ -309,7 +308,7 @@ export default function NowPlayingScreen() {
     try {
       // Use detected host or fall back to localhost
       const hostToCheck = spotifyHostOverride || "localhost";
-      const protocol = !spotifyHostOverride && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "https" : "http";
+      const protocol = "https";  // Always HTTPS since backend runs on HTTPS
       const res = await fetch(`${protocol}://${hostToCheck}:8000/api/spotify/status`);
       if (!res.ok) {
         setSpotifyConnected(false);
