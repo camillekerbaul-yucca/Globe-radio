@@ -292,8 +292,14 @@ export default function NowPlayingScreen() {
 
   const progressPercent = duration ? (currentTime / duration) * 100 : 0;
   const remainingTime = duration ? duration - currentTime : 0;
+  
+  // Determine the proper host and protocol for Spotify
+  // - localhost (dev): use localhost with HTTPS (registered with Spotify)
+  // - other hosts (Pi): use detected LAN IP with HTTP
+  const isLocalhost = !spotifyHostOverride && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
   const spotifyHost = spotifyHostOverride || window.location.hostname || "localhost";
-  const spotifyLoginUrl = `http://${spotifyHost}:8000/api/spotify/login`;
+  const spotifyProtocol = isLocalhost ? "https" : "http";  // localhost is HTTPS, others are HTTP
+  const spotifyLoginUrl = `${spotifyProtocol}://${spotifyHost}:8000/api/spotify/login`;
   const spotifyQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
     spotifyLoginUrl
   )}`;
@@ -303,7 +309,8 @@ export default function NowPlayingScreen() {
     try {
       // Use detected host or fall back to localhost
       const hostToCheck = spotifyHostOverride || "localhost";
-      const res = await fetch(`http://${hostToCheck}:8000/api/spotify/status`);
+      const protocol = !spotifyHostOverride && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "https" : "http";
+      const res = await fetch(`${protocol}://${hostToCheck}:8000/api/spotify/status`);
       if (!res.ok) {
         setSpotifyConnected(false);
         return;
@@ -317,17 +324,21 @@ export default function NowPlayingScreen() {
 
   const fetchHostInfo = async () => {
     try {
-      // Try to fetch from current location first
+      // Only fetch LAN IP if not on localhost development
       const currentHost = window.location.hostname || "localhost";
-      const apiBase = `http://${currentHost}:8000`;
+      if (currentHost === "localhost" || currentHost === "127.0.0.1") {
+        // Development mode on localhost - don't try to fetch LAN IP
+        console.log("ℹ Running on localhost (dev mode) - using localhost for Spotify redirect");
+        return;
+      }
       
+      // On Pi or other network host - fetch the detected LAN IP
+      const apiBase = `http://${currentHost}:8000`;
       const res = await fetch(`${apiBase}/api/hostinfo`);
       if (!res.ok) return;
       const data = await res.json();
       
-      // Always use the LAN IP returned by the server
       if (data.lan_ip) {
-        // Add debug log (can be removed later)
         console.log(`✓ Fetched LAN IP from server: ${data.lan_ip}`);
         setSpotifyHostOverride(data.lan_ip);
       }

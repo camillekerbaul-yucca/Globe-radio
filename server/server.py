@@ -70,17 +70,31 @@ app.add_middleware(
 # Spotify configuration
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "711d2c87130243d6b5acc63a6f991846")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
-SPOTIFY_BACKEND_BASE_URL = os.getenv("SPOTIFY_BACKEND_BASE_URL", "http://127.0.0.1:8000")
+SPOTIFY_BACKEND_BASE_URL = os.getenv("SPOTIFY_BACKEND_BASE_URL", "https://localhost:8000")
 SPOTIFY_FRONTEND_BASE_URL = os.getenv("SPOTIFY_FRONTEND_BASE_URL", "http://localhost:5173")
 
-# Determine the redirect URI - prefer LAN IP if available, fall back to configured URL
+# Determine the redirect URI 
 def get_spotify_redirect_uri():
-    """Get Spotify redirect URI, preferring LAN IP for phones accessing from network"""
+    """
+    Get Spotify redirect URI. Priority:
+    1. Explicit SPOTIFY_REDIRECT_URI env var (if set)
+    2. LAN IP if detected on Pi (for Raspberry Pi deployment)
+    3. Fall back to SPOTIFY_BACKEND_BASE_URL (for local dev)
+    """
+    # Check if explicitly set in environment
+    explicit_uri = os.getenv("SPOTIFY_REDIRECT_URI")
+    if explicit_uri:
+        return explicit_uri
+    
+    # Auto-detect LAN IP for Pi deployment (only if not localhost)
     lan_ip = get_lan_ip()
     if lan_ip and lan_ip != "127.0.0.1":
-        # Use LAN IP if detected (for Raspberry Pi or deployed scenarios)
+        # For Pi: would need HTTPS setup. For now, return the LAN IP URI
+        # On Pi, you'll need to set SPOTIFY_BACKEND_BASE_URL to https://192.168.x.x:8000
+        # or register the HTTP URI directly with Spotify
         return f"http://{lan_ip}:8000/callback"
-    # Fall back to configured URL (for local dev)
+    
+    # Fall back to configured URL (for local dev: https://localhost:8000)
     return f"{SPOTIFY_BACKEND_BASE_URL}/callback"
 
 SPOTIFY_REDIRECT_URI = get_spotify_redirect_uri()
